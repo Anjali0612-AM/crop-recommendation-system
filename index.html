@@ -1,0 +1,598 @@
+ 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Crop Recommendation System</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f8f4;
+    color: #333;
+}
+
+header {
+    background: linear-gradient(135deg, #2e7d32, #1b5e20);
+    color: white;
+    text-align: center;
+    padding: 28px 15px;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 30px;
+}
+
+nav {
+    background: #164d20;
+    padding: 14px;
+    text-align: center;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 12px;
+    font-weight: bold;
+}
+
+nav a:hover {
+    text-decoration: underline;
+}
+
+.container {
+    width: 92%;
+    max-width: 850px;
+    margin: 25px auto;
+}
+
+.card {
+    background: white;
+    padding: 23px;
+    margin-bottom: 22px;
+    border-radius: 13px;
+    box-shadow: 0 3px 12px #00000012;
+}
+
+.card h2 {
+    margin-top: 0;
+    color: #2e7d32;
+}
+
+.how-to-use {
+    background: #e8f5e9;
+    border-left: 5px solid #2e7d32;
+}
+
+li {
+    line-height: 1.8;
+}
+
+.form-group {
+    margin-bottom: 17px;
+}
+
+label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 7px;
+}
+
+input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 7px;
+    font-size: 15px;
+}
+
+input:focus {
+    outline: none;
+    border-color: #2e7d32;
+}
+
+.button-group {
+    display: flex;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+button {
+    flex: 1;
+    padding: 13px;
+    border: 0;
+    border-radius: 7px;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.predict-btn {
+    background: #2e7d32;
+    color: white;
+}
+
+.predict-btn:hover {
+    background: #1b5e20;
+}
+
+.clear-btn {
+    background: #eee;
+    color: #333;
+}
+
+.result-card {
+    background: #f1f8e9;
+    border-left: 5px solid #43a047;
+}
+
+.crop-name {
+    font-size: 30px;
+    font-weight: bold;
+    color: #2e7d32;
+    text-transform: capitalize;
+    overflow-wrap: anywhere;
+}
+
+.values-box {
+    background: white;
+    padding: 16px;
+    border-radius: 8px;
+    margin-top: 18px;
+}
+
+.values-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+}
+
+.value-item {
+    background: #f5f8f5;
+    padding: 12px;
+    border-radius: 7px;
+    overflow-wrap: anywhere;
+}
+
+.info-box {
+    line-height: 1.8;
+    margin-top: 18px;
+}
+
+.tips-box,
+.fertilizer-box,
+.irrigation-box,
+.soil-box,
+.ai-box {
+    padding: 18px;
+    margin-top: 18px;
+    border-radius: 10px;
+}
+
+.tips-box {
+    background: #fffde7;
+    border-left: 5px solid #fbc02d;
+}
+
+.tips-box h3 {
+    color: #f57f17;
+    margin-top: 0;
+}
+
+.fertilizer-box {
+    background: #fff3e0;
+    border-left: 5px solid #ef6c00;
+}
+
+.fertilizer-box h3 {
+    color: #e65100;
+    margin-top: 0;
+}
+
+.fertilizer-main {
+    color: #e65100;
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.irrigation-box {
+    background: #e3f2fd;
+    border-left: 5px solid #1976d2;
+}
+
+.irrigation-box h3 {
+    color: #1565c0;
+    margin-top: 0;
+}
+
+.irrigation-main {
+    color: #1565c0;
+    font-weight: bold;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+.soil-box {
+    background: linear-gradient(135deg, #e8f5e9, #f1f8e9);
+    border-left: 5px solid #388e3c;
+}
+
+.soil-box h3 {
+    color: #2e7d32;
+    margin-top: 0;
+}
+
+.soil-status {
+    font-size: 23px;
+    font-weight: bold;
+    color: #2e7d32;
+    margin: 12px 0;
+}
+
+.score-number {
+    font-size: 32px;
+    font-weight: bold;
+    color: #1b5e20;
+}
+
+/* Progress bar: no dynamic CSS width is needed */
+.soil-progress {
+    display: block;
+    width: 100%;
+    height: 18px;
+    margin: 12px 0 18px;
+    border: none;
+    border-radius: 20px;
+    overflow: hidden;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+.soil-progress::-webkit-progress-bar {
+    background: #d7e2d7;
+    border-radius: 20px;
+}
+
+.soil-progress::-webkit-progress-value {
+    background: #43a047;
+    border-radius: 20px;
+}
+
+.soil-progress::-moz-progress-bar {
+    background: #43a047;
+    border-radius: 20px;
+}
+
+.soil-list {
+    background: #ffffffcc;
+    padding: 15px 15px 15px 35px;
+    border-radius: 8px;
+}
+
+.ai-box {
+    background: linear-gradient(135deg, #ede7f6, #e8eaf6);
+    border-left: 5px solid #673ab7;
+    box-shadow: 0 3px 10px #00000012;
+}
+
+.ai-box h3 {
+    color: #512da8;
+    margin-top: 0;
+    font-size: 22px;
+}
+
+.ai-note,
+.small-note {
+    background: #ffffffbf;
+    padding: 12px;
+    border-radius: 7px;
+    margin-top: 15px;
+    color: #555;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.error-box {
+    background: #ffebee;
+    border-left: 5px solid #c62828;
+    padding: 15px;
+    border-radius: 8px;
+    color: #b71c1c;
+    overflow-wrap: anywhere;
+}
+
+footer {
+    background: #1b5e20;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    margin-top: 35px;
+}
+
+@media (max-width: 600px) {
+    header h1 {
+        font-size: 23px;
+    }
+
+    nav a {
+        display: inline-block;
+        margin: 6px;
+    }
+
+    .container {
+        width: 94%;
+    }
+
+    .card {
+        padding: 17px;
+    }
+
+    .button-group {
+        flex-direction: column;
+    }
+
+    .values-grid {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>🌾 Crop Recommendation System</h1>
+    <p>Machine Learning Based Smart Farming System</p>
+</header>
+
+<nav>
+    <a href="/">Home</a>
+    <a href="/history">History</a>
+    <a href="/about">About</a>
+    <a href="/contact">Contact</a>
+</nav>
+
+<div class="container">
+
+    <div class="card how-to-use">
+        <h2>📖 How to Use</h2>
+        <ol>
+            <li>Enter Nitrogen, Phosphorus and Potassium values.</li>
+            <li>Enter temperature, humidity, soil pH and rainfall.</li>
+            <li>Click Predict Crop.</li>
+            <li>Check crop information and farming tips.</li>
+            <li>Review fertilizer, irrigation and soil health recommendations.</li>
+            <li>Read the AI Farming Assistant guidance.</li>
+        </ol>
+    </div>
+
+    <div class="card">
+        <h2>🌱 Enter Agricultural Data</h2>
+
+        <form method="POST" action="/">
+            <div class="form-group">
+                <label for="N">Nitrogen (N)</label>
+                <input id="N" type="number" step="any" name="N"
+                       placeholder="Enter Nitrogen value" required>
+            </div>
+
+            <div class="form-group">
+                <label for="P">Phosphorus (P)</label>
+                <input id="P" type="number" step="any" name="P"
+                       placeholder="Enter Phosphorus value" required>
+            </div>
+
+            <div class="form-group">
+                <label for="K">Potassium (K)</label>
+                <input id="K" type="number" step="any" name="K"
+                       placeholder="Enter Potassium value" required>
+            </div>
+
+            <div class="form-group">
+                <label for="temperature">Temperature (°C)</label>
+                <input id="temperature" type="number" step="any"
+                       name="temperature" placeholder="Enter temperature" required>
+            </div>
+
+            <div class="form-group">
+                <label for="humidity">Humidity (%)</label>
+                <input id="humidity" type="number" step="any"
+                       name="humidity" placeholder="Enter humidity" required>
+            </div>
+
+            <div class="form-group">
+                <label for="ph">Soil pH Value</label>
+                <input id="ph" type="number" step="any" name="ph"
+                       placeholder="Enter soil pH" required>
+            </div>
+
+            <div class="form-group">
+                <label for="rainfall">Rainfall (mm)</label>
+                <input id="rainfall" type="number" step="any"
+                       name="rainfall" placeholder="Enter rainfall" required>
+            </div>
+
+            <div class="button-group">
+                <button type="submit" class="predict-btn">🌾 Predict Crop</button>
+                <button type="reset" class="clear-btn">Clear Values</button>
+            </div>
+        </form>
+    </div>
+
+    {% if prediction %}
+    <div class="card result-card">
+
+        {% if prediction == "Error" %}
+        <div class="error-box">
+            <h2>⚠️ Something went wrong</h2>
+            <p>{{ info.description }}</p>
+        </div>
+
+        {% else %}
+        <h2>🌾 Crop Recommendation Result</h2>
+        <div class="crop-name">🌱 {{ prediction }}</div>
+
+        {% if input_values %}
+        <div class="values-box">
+            <h3>📊 Entered Values</h3>
+            <div class="values-grid">
+                <div class="value-item"><strong>Nitrogen:</strong> {{ input_values.N }}</div>
+                <div class="value-item"><strong>Phosphorus:</strong> {{ input_values.P }}</div>
+                <div class="value-item"><strong>Potassium:</strong> {{ input_values.K }}</div>
+                <div class="value-item"><strong>Temperature:</strong> {{ input_values.temperature }} °C</div>
+                <div class="value-item"><strong>Humidity:</strong> {{ input_values.humidity }}%</div>
+                <div class="value-item"><strong>pH:</strong> {{ input_values.ph }}</div>
+                <div class="value-item"><strong>Rainfall:</strong> {{ input_values.rainfall }} mm</div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if info %}
+        <div class="info-box">
+            {% if info.climate %}
+            <p><strong>🌡️ Climate:</strong> {{ info.climate }}</p>
+            {% endif %}
+
+            {% if info.water %}
+            <p><strong>💧 Water Requirement:</strong> {{ info.water }}</p>
+            {% endif %}
+
+            {% if info.season %}
+            <p><strong>📅 Season:</strong> {{ info.season }}</p>
+            {% endif %}
+
+            {% if info.soil %}
+            <p><strong>🌱 Suitable Soil:</strong> {{ info.soil }}</p>
+            {% endif %}
+
+            {% if info.description %}
+            <p><strong>ℹ️ Description:</strong> {{ info.description }}</p>
+            {% endif %}
+        </div>
+
+        {% if info.tips %}
+        <div class="tips-box">
+            <h3>🌾 Farming Tips</h3>
+            <ul>
+                {% for tip in info.tips %}
+                <li>{{ tip }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        {% endif %}
+
+        {% if fertilizer %}
+        <div class="fertilizer-box">
+            <h3>🧪 Fertilizer Recommendation</h3>
+            <p class="fertilizer-main">{{ fertilizer }}</p>
+
+            {% if fertilizer_details %}
+            <ul>
+                {% for detail in fertilizer_details %}
+                <li>{{ detail }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            <p class="small-note">
+                <strong>Note:</strong> This is a basic recommendation based on
+                entered N, P and K values. Actual fertilizer needs should be
+                confirmed through soil testing and local agricultural advice.
+            </p>
+        </div>
+        {% endif %}
+
+        {% if irrigation %}
+        <div class="irrigation-box">
+            <h3>💧 Irrigation Recommendation</h3>
+            <p class="irrigation-main">{{ irrigation }}</p>
+
+            {% if irrigation_details %}
+            <ul>
+                {% for detail in irrigation_details %}
+                <li>{{ detail }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+
+            <p class="small-note">
+                <strong>Note:</strong> Consider soil moisture, crop growth stage
+                and local weather before deciding irrigation.
+            </p>
+        </div>
+        {% endif %}
+
+        {% if soil_health %}
+        <div class="soil-box">
+            <h3>🧪 Soil Health Analysis</h3>
+            <div class="soil-status">{{ soil_health }}</div>
+
+            <p>
+                <span class="score-number">{{ soil_score }}</span>
+                <strong>/100 Soil Health Score</strong>
+            </p>
+
+            <progress
+                class="soil-progress"
+                value="{{ soil_score|default(0)|int }}"
+                max="100"
+                aria-label="Soil Health Score">
+            </progress>
+
+            <h4>📋 Soil Analysis Details</h4>
+            <ul class="soil-list">
+                {% for advice in soil_advice %}
+                <li>{{ advice }}</li>
+                {% endfor %}
+            </ul>
+
+            <p class="small-note">
+                This is a basic rule-based score, not a laboratory soil test.
+                Nutrient requirements depend on the crop, soil type and locally
+                recommended nutrient ranges.
+            </p>
+        </div>
+        {% endif %}
+
+        {% if ai_advice %}
+        <div class="ai-box">
+            <h3>🤖 AI Farming Assistant</h3>
+            <p>Farming guidance based on your entered values:</p>
+
+            <ul>
+                {% for advice in ai_advice %}
+                <li>{{ advice }}</li>
+                {% endfor %}
+            </ul>
+
+            <p class="ai-note">
+                <strong>About this analysis:</strong> The current assistant
+                provides rule-based guidance. It does not replace expert
+                agricultural advice or soil testing.
+            </p>
+        </div>
+        {% endif %}
+
+        {% endif %}
+    </div>
+    {% endif %}
+
+</div>
+
+<footer>
+    <p>🌱 Crop Recommendation System</p>
+    <p>Machine Learning &amp; Smart Farming</p>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,4 @@
+Date,Time,Nitrogen,Phosphorus,Potassium,Temperature,Humidity,pH,Rainfall,Predicted Crop
+2026-09-29,20:48:37,90.0,42.0,43.0,20.87,82.0,6.5,202.93,rice
+2026-10-09,20:15:57,90.0,42.0,43.0,20.87,82.0,6.5,202.93,rice
+2026-10-15,10:25:54,90.0,42.0,43.0,20.87,82.0,6.5,202.93,rice
